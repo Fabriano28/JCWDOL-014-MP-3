@@ -13,6 +13,9 @@ model User {
   password   String
   first_name String
   last_name  String
+  isVerified Boolean  @default(false)
+  role_id    Int
+  role       Role     @relation(fields: [role_id], references: [role_id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
@@ -27,6 +30,7 @@ model Referral {
 model Role {
   role_id    Int      @id @default(autoincrement())
   role_name  String
+  User       User[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
 }
