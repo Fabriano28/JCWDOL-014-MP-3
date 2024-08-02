@@ -1,8 +1,12 @@
 import prisma from "../prisma";
 import { genSalt, hash, compare } from "bcrypt";
 import { sign } from "jsonwebtoken";
+import userAction from "./user.action";
+
+
 
 class AuthAction {
+
     public async login(email: string, password: string) {
         try {
             const user = await prisma.user.findFirst({
@@ -44,6 +48,46 @@ class AuthAction {
             throw err;
         }
     }
+
+    public async register(email: string, password: string, first_name: string, last_name: string){
+        try {
+            const check = await userAction.findUserByEmail(email);
+
+            if (check) throw new Error("Email already exist");
+
+            const salt = await genSalt(10);
+            const hashPass = await hash(password, salt);
+
+            const user = await prisma.user.create({
+                data: {
+                    email,
+                    password: hashPass,
+                    first_name,
+                    last_name,
+                    role_id: 1,
+                },
+                include: {
+                    referral: true,
+                }
+            });
+
+            const referral = await prisma.referral.create({
+                data: {
+                    user_id: user.user_id,
+                },
+            });
+
+            return { user, referral };
+        } catch (err) {
+            throw err;
+        }
+    }
+}
+
+function generateString(length: number, charset: string = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'): string {
+    const randomValues = new Uint8Array(length);
+    crypto.getRandomValues(randomValues);
+    return Array.from(randomValues, (v) => charset[v % charset.length]).join('');
 }
 
 export default new AuthAction();

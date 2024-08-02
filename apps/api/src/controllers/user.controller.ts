@@ -5,26 +5,6 @@ import { User } from "@/types/express";
 
 export class UserController {
 
-    async createUserData(req: Request, res: Response, next: NextFunction){
-        try {
-            const { email, password, first_name, last_name } = req.body;
-
-            const user = await userAction.createUser(
-                email,
-                password,
-                first_name,
-                last_name,
-            );
-
-            res.status(200).json({
-                message: "Create User Successfull",
-                data: user,
-            });
-        } catch (err) {
-            next(err);
-        }
-    }
-
     async getUsersData(req: Request, res: Response, next: NextFunction){
         try {
             const { email, first_name, last_name } = req.query;

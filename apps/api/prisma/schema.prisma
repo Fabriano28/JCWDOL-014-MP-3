@@ -13,26 +13,41 @@ model User {
   password   String
   first_name String
   last_name  String
-  isVerified Boolean  @default(false)
-  role_id    Int
-  role       Role     @relation(fields: [role_id], references: [role_id])
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  role_id  Int
+  role     Role      @relation(fields: [role_id], references: [role_id])
+  referral Referral?
+  points   Points[]
 }
 
 model Referral {
-  referral_id String   @id @default(uuid())
-  points      Int?
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  referral_id   String   @id @default(uuid())
+  created_at    DateTime @default(now())
+  updated_at    DateTime @updatedAt
+
+  user_id String @unique
+  user    User   @relation(fields: [user_id], references: [user_id])
+}
+
+model Points {
+  point_id   String   @id @default(uuid())
+  amount     Int?
+  created_at DateTime @default(now())
+  expired_at DateTime
+
+  user_id String
+  User    User   @relation(fields: [user_id], references: [user_id])
 }
 
 model Role {
   role_id    Int      @id @default(autoincrement())
   role_name  String
-  User       User[]
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  User User[]
 }
 
 model Event {

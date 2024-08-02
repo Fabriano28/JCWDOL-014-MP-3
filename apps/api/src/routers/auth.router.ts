@@ -16,8 +16,8 @@ export class AuthRouter implements IRoutes {
     }
 
     private initializeRoutes() {
-        this.router.post("/login", this.authController.loginController);
-        this.router.post("/register", this.userController.createUserData);
+        this.router.post("/login", this.authController.login);
+        this.router.post("/register", this.authController.register);
     }
 
     getRouter(): Router {
