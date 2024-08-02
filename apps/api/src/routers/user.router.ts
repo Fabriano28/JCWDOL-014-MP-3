@@ -16,11 +16,14 @@ export class UserRouter implements IRoutes {
     }
 
     private initializeRoutes() {
-        this.router.get("/users", this.userController.getUsersData);
+        this.router.get("/users", this.auth.verifyToken, this.auth.role(['user']), this.userController.getUsersData);
         this.router.get("/users/profile", this.auth.verifyToken, this.userController.getUserData);
         this.router.get("/users/:userId", this.userController.getUserData);
-        this.router.post("/users", this.userController.createUserData);
+
+        // this.router.post("/users", this.userController.createUserData);
+
         this.router.patch("/users/:userId", this.userController.updateUserData);
+
         this.router.delete("/users/:userId", this.userController.deleteUserData);
     }
 

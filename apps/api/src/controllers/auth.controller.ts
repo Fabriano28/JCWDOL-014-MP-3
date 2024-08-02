@@ -1,8 +1,5 @@
 import { Request, Response, NextFunction } from "express";
-import prisma from "@/prisma";
-import userAction from "@/actions/user.action";
 import authAction from "@/actions/auth.action";
-import { User } from "@/types/express";
 
 export class AuthController {
 
