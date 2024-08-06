@@ -40,7 +40,7 @@ class AuthAction {
             };
 
             const token = sign(payload, String(process.env.API_KEY), {
-                expiresIn: "1hr",
+                expiresIn: "10000",
             });
 
             return { user, token};
