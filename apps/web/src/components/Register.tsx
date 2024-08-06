@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useForm, SubmitHandler } from "react-hook-form"
 import { useRouter } from "next/navigation";
 import axios from "axios";
@@ -18,13 +18,33 @@ import {
 type Inputs = {
     email: string,
     password: string,
+    first_name: string,
+    last_name: string,
 }
 
-const LoginForm = () => {
+const RegisterForm = () => {
     const [error, setError] = useState(null);
     const [isLoading, setIsLoading] = useState(false);
 
     const router = useRouter();   
+
+    const handleRegister = async (data: Inputs) =>{
+        setIsLoading(true);
+        setError(null);
+
+        try {
+            console.log(data);
+            const response = await axios.post('http://localhost:8000/api/register', data);
+            console.log(response);
+
+            router.push("/login");
+        } catch (err: any) {
+            console.log(err);
+            setError(err.response?.data?.message || "Login failed");
+        }  finally {
+            setIsLoading(false);
+        }
+    }
 
     const {
         handleSubmit,
@@ -32,42 +52,9 @@ const LoginForm = () => {
         formState: { errors, isSubmitting }
     } = useForm<Inputs>();
 
-    const handleLogin = async (data: Inputs) => {
-        setIsLoading(true);
-        setError(null);
-
-        try {
-            const response = await axios.post('http://localhost:8000/api/login', data);
-            console.log(response.data);
-
-            const userData = response.data.data;
-            const token = userData.token;
-            localStorage.setItem("jwtToken", token);
-        
-            if (userData.user.role.role_name === 'user') {
-              router.push('/landing');
-            } else if (userData.user.role.role_name === 'event organizer') {
-                router.push('/landing');
-            } else {
-              console.log("No user data found in response");
-            }
-        } catch (err: any) {
-            console.log(err);
-            setError(err.response?.data?.message || "Register failed");
-        } finally {
-            setIsLoading(false);
-        }
-    }
-
     const onSubmit: SubmitHandler<Inputs> = (data) => {
-        handleLogin(data);
+        handleRegister(data);
     }
-
-    useEffect(()=> {
-        if(localStorage.getItem('jwtToken')){
-            localStorage.removeItem('jwtToken');
-        }
-    }, []);
 
     return (
 
@@ -82,15 +69,37 @@ const LoginForm = () => {
                                 placeholder='email'
                                 {...register('email', {
                                     required: 'This is required',
-                                    pattern: {
-                                        value: /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$/,
-                                        message: 'Invalid email format',
-                                    },
+                                    minLength: { value: 4, message: 'Minimum length should be 4' },
                                 })}
                             />
                             <FormErrorMessage>
                                 {errors.email && errors.email.message}
                             </FormErrorMessage>
+                            <FormLabel htmlFor='first_name'>First Name</FormLabel>
+                            <Input
+                                id='first_name'
+                                placeholder='first_name'
+                                {...register('first_name', {
+                                    required: 'This is required',
+                                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                                })}
+                            />
+                            <FormErrorMessage>
+                                {errors.email && errors.email.message}
+                            </FormErrorMessage>
+                            <FormLabel htmlFor='last_name'>Last Name</FormLabel>
+                            <Input
+                                id='last_name'
+                                placeholder='last_name'
+                                {...register('last_name', {
+                                    required: 'This is required',
+                                    minLength: { value: 4, message: 'Minimum length should be 4' },
+                                })}
+                            />
+                            <FormErrorMessage>
+                                {errors.email && errors.email.message}
+                            </FormErrorMessage>
+                            <FormLabel htmlFor='password'>Password</FormLabel>
                             <Input
                                 id='password'
                                 placeholder='password'
@@ -113,4 +122,4 @@ const LoginForm = () => {
     );
 };
 
-export default LoginForm;
+export default RegisterForm;

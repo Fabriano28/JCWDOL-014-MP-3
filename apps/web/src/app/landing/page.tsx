@@ -1,11 +1,11 @@
-import LoginForm from "@/components/Login";
+import Landing from "@/components/Landing";
 import { ChakraProvider } from "@chakra-ui/react";
 
-export default function LoginPage(){
+export default function LandingPage(){
 
     return (
         <ChakraProvider>
-            <LoginForm />
+            <Landing />
         </ChakraProvider>
     )
 }
